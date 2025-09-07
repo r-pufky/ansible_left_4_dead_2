@@ -1,0 +1,26 @@
+---
+###############################################################################
+# Validate
+###############################################################################
+# Ensure services and confirm they are active and running.
+
+- name: 'Validate | waiting for service ⚠'
+  ansible.builtin.pause:
+    seconds: '{{ left_4_dead_2_srv_validate_delay }}'
+
+- name: 'Validate | query service status'
+  ansible.builtin.service_facts:
+
+- name: 'Validate | assert services running'
+  ansible.builtin.assert:
+    quiet: true
+    that: ansible_facts.services[item].state == 'running'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                     Service failed to start.                      │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ {{ item }}
+  loop:
+    - 'left_4_dead_2.service'

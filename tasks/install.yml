@@ -1,0 +1,137 @@
+---
+###############################################################################
+# Install
+###############################################################################
+# WARNING:
+# > L4D2 requires valid Steam login with entitlements as of 2024-11-26. Errors
+# > during download with RC=5 (Rate Limit Exceeded) REQUIRES a delay of 12-24
+# > hours before attempting again, per Steam. This is non-negotiable.
+#
+# Install location is relative to base installation directory. This is **NOT**
+# customizable, contrary to many mis-documented Internet configurations.
+#
+# server.cfg must be located in left4dead2/cfg and can only be referenced on
+# start using the relative path from that location (server.cfg).
+#
+# Valve disabled 'sv_password' for L4D2; will get prompts but login will fail.
+# Use group management & sv_search_key to restrict to a group of players or
+# remove server advertisement and direct connect.
+#
+# Generates:
+#   _left_4_dead_2: dict - Role runtime specific config.
+#
+# Reference:
+# * https://github.com/r-pufky/steam/blob/master/docs/examples/left-4-dead.md
+# * https://old.reddit.com/r/l4d2/comments/1jkrr6/dedicated_server_problems/
+# * https://forums.srcds.com/viewtopic/17642
+
+- name: 'Install | steamcmd'
+  ansible.builtin.import_role:
+    name: 'r_pufky.game.steam'
+  vars:
+    steam_srv_metamod_enable: '{{ left_4_dead_2_srv_metamod_enable }}'
+    steam_srv_metamod_branch: '{{ left_4_dead_2_srv_metamod_branch }}'
+    steam_srv_metamod_build: '{{ left_4_dead_2_srv_metamod_build }}'
+    steam_srv_sourcemod_enable: '{{ left_4_dead_2_srv_sourcemod_enable }}'
+    steam_srv_sourcemod_branch: '{{ left_4_dead_2_srv_sourcemod_branch }}'
+    steam_srv_sourcemod_build: '{{ left_4_dead_2_srv_sourcemod_build }}'
+
+- name: 'Install | cache steam user'
+  ansible.builtin.set_fact:
+    _left_4_dead_2:
+      user: '{{ _steam_srv_user.raw }}'
+      uid: '{{ _steam_srv_user.role_uid }}'
+      group: '{{ _steam_srv_group.raw }}'
+      gid: '{{ _steam_srv_group.role_gid }}'
+      home: '{{ _steam_srv_user.role_home }}'
+      base: '{{ left_4_dead_2_srv_roo ~ "/left4dead2" }}'
+      config: '{{ left_4_dead_2_srv_root ~ "/left4dead2/cfg" }}'
+      login: '{{ _steam_srv_user.role_home ~ "/.steam/steamcmd.env" }}'
+      sm_admin_config: '{{
+          left_4_dead_2_srv_root ~
+          _steam_srv_sourcemod_enable.role_dirs[0] ~
+          "/configs/admins_simple.ini" }}'
+
+- name: 'Install | create {{ left_4_dead_2_srv_root }}'
+  ansible.builtin.file:
+    path: '{{ left_4_dead_2_srv_root }}'
+    owner: '{{ _left_4_dead_2.uid }}'
+    group: '{{ _left_4_dead_2.gid }}'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Install | update server'
+  when: left_4_dead_2_srv_update_server
+  block:
+    # Passwords with special characters fail spectacularly when run through
+    # shell > yaml > ansible > ansiballz > python > bash. Instead temporarily
+    # store login credentials base64 encoded in a secured file, and destroy
+    # immediately after successful login and authentication token cache.
+    - name: 'Install | cache login credentials'
+      ansible.builtin.template:
+        src: 'steamcmd.env.j2'
+        dest: '{{ _left_4_dead_2.login }}'
+        owner: '{{ _left_4_dead_2.uid }}'
+        group: '{{ _left_4_dead_2.gid }}'
+        mode: '0400'
+
+    - name: 'Install | ACTION REQUIRED ⚠'
+      ansible.builtin.debug:
+        msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                Approve Steam Guard Login Request.                 │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │ 🗘 A Steam Guard login request should appear shortly (up to 60s).
+          │
+          │   Relaunch Steam app if nothing appears.
+          │
+          │ Server will be updated after approval. This may take a few minutes.
+          │
+          │   ~7.5GB to synchronize.
+
+    - name: 'Install | update server {{ left_4_dead_2_role_app_id }}'
+      ansible.builtin.shell: >-
+        source {{ _left_4_dead_2.login }} &&
+        /usr/games/steamcmd
+        +@sSteamCmdForcePlatformType {{ left_4_dead_2_role_platform }}
+        +force_install_dir {{ left_4_dead_2_srv_root }}
+        +login $STEAM_USER $STEAM_PASS
+        +app_update {{ left_4_dead_2_role_app_id }}
+        {{ left_4_dead_2_srv_extra_opts }}
+        +quit
+      args:
+        executable: '/bin/bash'
+        chdir: '{{ _left_4_dead_2.home }}'
+      changed_when: false
+      become: true
+      become_user: '{{ _left_4_dead_2.user }}'
+
+    - name: 'Install | remove login credentials'
+      ansible.builtin.file:
+        path: '{{ _left_4_dead_2.login }}'
+        state: 'absent'
+
+- name: 'Install | metamod'
+  ansible.builtin.include_tasks: 'source_mod.yml'
+  vars:
+    mod: 'metamod'
+    src: '{{ _steam_srv_metamod_enable.role_archive_path }}'
+    dest: '{{ left_4_dead_2_srv_root }}'
+    version: '{{ _steam_srv_metamod_enable.role_version }}'
+    dirs: '{{ _steam_srv_metamod_enable.role_dirs }}'
+    files: '{{ _steam_srv_metamod_enable.role_files }}'
+    enable: '{{ left_4_dead_2_srv_metamod_enable }}'
+
+# Always install sourcemod after metamod; sourcemod places files in metamod.
+- name: 'Install | sourcemod'
+  ansible.builtin.include_tasks: 'source_mod.yml'
+  vars:
+    mod: 'sourcemod'
+    src: '{{ _steam_srv_sourcemod_enable.role_archive_path }}'
+    dest: '{{ left_4_dead_2_srv_root }}'
+    version: '{{ _steam_srv_sourcemod_enable.role_version }}'
+    dirs: '{{ _steam_srv_sourcemod_enable.role_dirs }}'
+    files: '{{ _steam_srv_sourcemod_enable.role_files }}'
+    enable: '{{ left_4_dead_2_srv_sourcemod_enable }}'

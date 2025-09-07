@@ -1,0 +1,53 @@
+---
+###############################################################################
+# Source Mods
+###############################################################################
+# Install source mods. Source mod archive must be pre-staged.
+#
+# Args:
+#   mod: str - Mod name.
+#   src: str - Mod archive source.
+#   dest: str - Mod destination.
+#   version: str - Mod version in version file.
+#   dirs: list of str - Mod relative main directories, primary first.
+#   files: list of str - Mod relative files (outside of main directories).
+#   enable: bool - Enable or Disable mod.
+#
+# Reference:
+# * https://wiki.alliedmods.net/Installing_Metamod:Source
+# * https://wiki.alliedmods.net/Installing_SourceMod
+
+- name: 'Install | source mods | check {{ mod }}'
+  ansible.builtin.slurp:
+    src: '{{ dest ~ dirs[0] ~ "/.version" }}'
+  failed_when: false
+  register: _steam_mod
+
+- name: 'Install | source mods | remove {{ mod }}'
+  when: not enable
+  ansible.builtin.file:
+    path: '{{ dest ~ item }}'
+    state: 'absent'
+  loop: '{{ dirs + files | flatten | unique }}'
+
+- name: 'Install | source mods | {{ mod }}'
+  when: >
+    enable and
+    _steam_mod.content | default('Cg==') | b64decode != version
+  block:
+    - name: 'Install | source mods | unpack {{ mod }}'
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: '{{ src }}'
+        dest: '{{ dest }}'
+        owner: '{{ _left_4_dead_2.uid }}'
+        group: '{{ _left_4_dead_2.gid }}'
+        creates: '{{ dest ~ dirs[0] ~ "/bin" }}'
+
+    - name: 'Install | source mods | tag {{ mod }}'
+      ansible.builtin.copy:
+        dest: '{{ dest ~ dirs[0] ~ "/.version" }}'
+        owner: '{{ _left_4_dead_2.uid }}'
+        group: '{{ _left_4_dead_2.gid }}'
+        mode: '0644'
+        content: '{{ version }}'

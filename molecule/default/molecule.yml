@@ -1,0 +1,70 @@
+---
+###############################################################################
+# Default
+###############################################################################
+# Default values result in running Left 4 Dead 2 server.
+#
+# Tests:
+# * Sourcemod is installed correctly.
+# * Metamod is installed correctly.
+# * motd.txt set.
+# * host.txt set.
+# * server.cfg set.
+# * admins_simple.ini set.
+# * Left 4 Dead 2 server is running.
+
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        left_4_dead_2_srv_metamod_enable: true
+        left_4_dead_2_srv_sourcemod_enable: true
+        left_4_dead_2_cfg_admins:
+          - user: 76561198021925107
+            priv: '99:z'  # Root privileges.
+        left_4_dead_2_cfg_host: 'test server'
+        left_4_dead_2_cfg_motd: 'test server'
+platforms:
+  - name: 'left_4_dead_2-debian-13-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+    published_ports:
+      - '27015:27015/udp'
+      - '27015:27015/tcp'
+      - '27016:27016/udp'
+      - '27016:27016/tcp'
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # services always restarted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

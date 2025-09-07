@@ -1,76 +1,34 @@
 ---
 ###############################################################################
-# Default Steam Package Dependencies
+# Left 4 Dead 2 Options
 ###############################################################################
-# Default required packages for Steam install.
+# Data annotations are not used for game configuration files as it is all well
+# defined static data.
 #
-# '-debug' requires GDB and c++6 for `srcds_run` which prevents PID error and
-# auto reboot every 10 seconds.
+# Updates:
+# * Version is located in 'left4dead2/steam.inf'.
+# * New MAJOR, MINOR releases should hard branch at version before starting
+#   (e.g. 2.14.x branch).
+# * Keep a separate change log as changes are made, you will not remember all
+#   of them.
+# * Update role defaults (includes updating defaults, tasks):
+#   * Use configuration docs to add new variables.
+#   * Use defaults/ to remove any changed/deprecated variables.
+# * Update tests for any changes.
+# * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
+# * Tag with OS-APP-ROLE version.
 #
 # Reference:
-# *  https://forums.alliedmods.net/showthread.php?t=300118
-#
-# 'SDL manager'
-#
-# Reference:
-# * https://github.com/ValveSoftware/steam-for-linux/issues/7036
+# * https://developer.valvesoftware.com/wiki/7_Days_to_Die_Dedicated_Server
+# * https://left4dead.miraheze.org/wiki/Left_4_Dead_Wiki
 
-# x86_64 packages for steam.
-steam_default_core_packages:
-  - 'lib32gcc-s1'
-  - 'libsdl2-2.0-0' # SDL support
-  - 'steamcmd'
-  - 'gdb'           # -debug support
-  - 'libc6'         # -debug support
-
-# x86 (i386) packages for steam.
-steam_default_i386_packages:
-  - 'libsdl2-2.0-0:i386' # SDL support
-  - 'libc6:i386'         # -debug support
+left_4_dead_2_role_validate_date: '2025-09-05'
+left_4_dead_2_role_validate_release: 'trixie'
+left_4_dead_2_role_validate_version: '2.2.4.3'
 
 ###############################################################################
-# Default Wine Package Dependencies
+# Static Server Options
 ###############################################################################
-# Default required packages for Wine install.
 
-# Repository to use for wine install
-steam_default_wine_repo: 'deb https://dl.winehq.org/wine-builds/debian/ {{ ansible_distribution_release }} main'
-
-# x86_64 packages for wine.
-wine_default_core_packages:
-  - 'gnupg2'
-  - 'xvfb'
-  - 'winbind'
-  - 'libasound2-plugins'
-
-# x86 (i386) packages for wine.
-wine_default_i386_packages:
-  - 'libasound2-plugins:i386'
-
-###############################################################################
-# Default Steam User Group
-###############################################################################
-# Default group settings if an Steam user is force created.
-
-steam_default_group:
-  name: 'steam'
-  gid:  51000
-
-###############################################################################
-# Default Steam User Account
-###############################################################################
-# Default user settings if an Steam user is force created.
-#
-# Logins are disabled.
-
-steam_default_user:
-    name:            'steam'
-    group:           'steam'
-    uid:             51000
-    shell:           '/bin/bash'
-    home:            '/home/steam'
-    create_home:     true
-    password:        '!'
-    password_lock:   true
-    update_password: 'always'
-    expires:         -1
+left_4_dead_2_role_app_id: 222860
+left_4_dead_2_role_platform: 'linux'

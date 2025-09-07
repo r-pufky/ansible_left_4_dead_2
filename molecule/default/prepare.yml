@@ -1,0 +1,79 @@
+---
+- name: 'Prepare'
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | create cache'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'create_cache.yml'
+      vars:
+        test_name: 'Prepare cache'
+
+    - name: 'Prepare | check metamod 1.12 1219'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Prepare | cache metamod 1.12 1219'
+        test_dest: 'mmsource-1.12.0-git1219-linux.tar.gz'
+        test_url: '{{
+            "https://mms.alliedmods.net/mmsdrop/1.12/" ~
+            "mmsource-1.12.0-git1219-linux.tar.gz"
+          }}'
+        test_mode: '0640'
+
+    - name: 'Prepare | check sourcemod 1.12 7210'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Prepare | cache metamod 1.12 7210'
+        test_dest: 'sourcemod-1.12.0-git7210-linux.tar.gz'
+        test_url: '{{
+            "https://sm.alliedmods.net/smdrop/1.12/" ~
+            "sourcemod-1.12.0-git7210-linux.tar.gz"
+          }}'
+        test_mode: '0640'
+
+- name: 'Prepare'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | stage /opt'
+      ansible.builtin.file:
+        path: '/opt/{{ item }}'
+        owner: 51000
+        group: 51000
+        mode: '0755'
+        state: 'directory'
+      loop:
+        - 'metamod'
+        - 'sourcemod'
+
+    - name: 'Prepare | stage metamod 1.12 1219'
+      ansible.builtin.copy:
+        src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/mmsource-1.12.0-git1219-linux.tar.gz"
+          }}'
+        dest: '/opt/metamod/mmsource-1.12.0-git1219-linux.tar.gz'
+        owner: 51000
+        group: 51000
+        mode: '0644'
+        directory_mode: '0755'
+        force: false
+
+    - name: 'Prepare | stage sourcemod 1.12 7210'
+      ansible.builtin.copy:
+        src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/sourcemod-1.12.0-git7210-linux.tar.gz"
+          }}'
+        dest: '/opt/sourcemod/sourcemod-1.12.0-git7210-linux.tar.gz'
+        owner: 51000
+        group: 51000
+        mode: '0644'
+        directory_mode: '0755'
+        force: false

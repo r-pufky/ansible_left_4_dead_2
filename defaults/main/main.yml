@@ -1,30 +1,141 @@
 ---
 ###############################################################################
-# Steam Role Configuration (~2GB)
+# Left 4 Dead 2
 ###############################################################################
-# Install steamcmd with additional dependencies for running windows servers.
-# Preconfigure server settings may be deployed by enabling specific games or
-# manually installed after the role is applied.
+#       Minimum   Recommended
+# CPU:  2c/2t     4c/8t@2.8Ghz
+# RAM:  2GB       4GB
+# Disk: 9GB       10GB (metamod, sourcemod; no additional mods)
 #
-# Preconfigured servers will install all files and services required to run a
-# game.
+# WARNING:
+# > L4D2 install requires valid Steam login with entitlements as of 2024-11-26.
+# > Steam Guard users MUST approve login on phone during role execution. Login
+# > is not required after dedicated server files downloaded.
+#
+# Reference:
+# * https://github.com/ValveSoftware/steam-for-linux/issues/11522
 
-# User that steam will run under. Assumes externally managed.
-steam_user:  'steam'
-steam_group: 'steam'
+# Steam username. Default: ''.
+left_4_dead_2_srv_steam_user: ''
 
-# Create 'steam' user if not detected? See: vars/main.yml.
-steam_create_user: false
+# Steam password.
+#
+# Always use !unsafe.
+#
+# Default: ''.
+left_4_dead_2_srv_steam_pass: !unsafe ''
 
-# Install wine if enabled. May be automatically enabled if a preconfigured
-# game is enabled. Default: true.
-steam_wine_enable: false
+# Root install location. Default: '/home/steam/left_4_dead_2'.
+left_4_dead_2_srv_root: '/home/steam/left_4_dead_2'
 
-# Wine release to install (stable, devel, staging). Default: 'stable'.
-steam_wine_release: 'stable'
+# Additional steamcmd options to use during app_update.
+#
+# Such as validation (validate).
+#
+# Default: ''.
+#
+# Reference:
+# * https: //developer.valvesoftware.com/wiki/SteamCMD
+left_4_dead_2_srv_extra_opts: ''
 
-# Enable CAP_NET_RAW to allow applications that need to send and receive raw IP
-# packets to do so. This is disabled by default because it carries a potential
-# security risk, and the vast majority of applications do not need that
-# capability; though some wine applications/games my need it. Default: false.
-steam_wine_raw_network_enable: false
+# Update Left 4 Dead 2 base server? Default: True.
+left_4_dead_2_srv_update_server: true
+
+# Validation delay (seconds).
+#
+# Specific machines may be slower to start dedicated server, resulting in
+# validation checks failing. This introduces a small delay to allow service
+# time to report running. 0 Disables.
+#
+# Default: 0 (seconds).
+left_4_dead_2_srv_validate_delay: 0
+
+# Server launch options.
+#
+# Command line options passed to dedicated server. Use only options that must
+# be set for service to start, and all others in left_4_dead_2_cfg_server.
+#
+# Special Case:
+# * Automatically provides (Do not use): console, game, exec, pidfile.
+#
+# Default: .
+#   - '+map l4d_hospital01_apart'
+#   - '+port 27015'
+#   - '+maxplayers 4'
+#   - '+nohltv'
+#
+# Reference:
+# * http://developer.valvesoftware.com/wiki/Command_line_options
+left_4_dead_2_srv_launch_options:
+  - '+map l4d_hospital01_apart'
+  - '+port 27015'
+  - '+maxplayers 4'
+  - '+nohltv'
+
+###############################################################################
+# Metamod Options
+###############################################################################
+# Provides 'SourceHook' which enables plugins for source games to intercept
+# calls (enables mod support).
+#
+# Reference:
+# * https: //www.sourcemm.net
+
+# Enable Metamod installation?
+#
+# Metamod will be downloaded to /opt/metamod. Specific games must manually
+# install Metamod based on game requirements and locations.
+#
+# Default: True.
+left_4_dead_2_srv_metamod_enable: true
+
+# Metamod branch.
+#
+# Default: '1.12'.
+#
+# Reference:
+# * https: //www.sourcemm.net/downloads.php?branch=stable
+left_4_dead_2_srv_metamod_branch: '1.12'
+
+# Metamod build.
+#
+# Default: '7210'.
+#
+# Reference:
+# * https: //www.sourcemm.net/downloads.php?branch=stable
+left_4_dead_2_srv_metamod_build: '1219'
+
+###############################################################################
+# Sourcemod
+###############################################################################
+# SourceMod is server modification for any game that runs on the Half-Life 2
+# engine. It is a powerful, highly optimized platform for scripting plugins and
+# handling server administration. The default package comes with a base set of
+# plugins, but there are over 2,500 plugins in the community.
+#
+# Reference:
+# * https: //www.sourcemod.net
+
+# Enable Sourcemod installation?
+#
+# Sourcemod will be downloaded to /opt/sourcemod. Specific games must manually
+# install Sourcemod based on game requirements and locations.
+#
+# Default: True.
+left_4_dead_2_srv_sourcemod_enable: true
+
+# Sourcemod branch.
+#
+# Default: '1.12'.
+#
+# Reference:
+# * https: //www.sourcemod.net/downloads.php?branch=stable
+left_4_dead_2_srv_sourcemod_branch: '1.12'
+
+# Sourcemod build.
+#
+# Default: '7210'.
+#
+# Reference:
+# * https: //www.sourcemod.net/downloads.php?branch=stable
+left_4_dead_2_srv_sourcemod_build: '7210'

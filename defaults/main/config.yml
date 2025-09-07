@@ -1,0 +1,119 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Host Message (host.txt)
+###############################################################################
+# Contents for the HOST file. Generally these are very finicky and
+# mis-documented throughout the web.
+#
+# Special Case:
+# * Text (HTML preferred).
+# * URL to HTTP only, which will render the Host banner.
+#
+# Default: '' (disabled).
+#
+# Reference:
+# * http://www.custwiki.cyberwurx.com/index.php/Using_host.txt_for_a_Server_Banner
+# yamllint enable rule:line-length
+left_4_dead_2_cfg_host: ''
+
+# yamllint disable rule:line-length
+###############################################################################
+# Message of the Day (motd.txt)
+###############################################################################
+# Contents for the MOTD file. Generally these are very finicky and
+# mis-documented throughout the web.
+#
+# Special Case:
+# * Text (HTML preferred).
+# * URL to HTTP only, which will render the MOTD banner.
+#
+# Default: '' (disabled).
+#
+# Reference:
+# * http://www.custwiki.cyberwurx.com/index.php/Using_host.txt_for_a_Server_Banner
+# yamllint enable rule:line-length
+left_4_dead_2_cfg_motd: ''
+
+# yamllint disable rule:line-length
+###############################################################################
+# Server Configuration (server.cfg)
+###############################################################################
+# There are 4429+ configuration options for Left 4 Dead. Reasonable default
+# configuration provided below.
+#
+# Special Case:
+# * Valve disabled 'sv_password' for L4D2; will get password prompts on connect
+#   but login will fail. Use group management & 'sv_search_key' to restrict to
+#   a group of players. Alternatively remove server steam advertisements and
+#   direct connect.
+#
+# Reference:
+# * https://developer.valvesoftware.com/wiki/List_of_Left_4_Dead_2_console_commands_and_variables
+# yamllint enable rule:line-length
+left_4_dead_2_cfg_server:
+  # Server
+  hostname: 'L4D2 Server'
+  sv_search_key: 'L4D2'
+  sv_allow_lobby_connect_only: 0
+  sv_steamgroup: 0
+  sv_steamgroup_exclusive: 0
+  sv_gametypes: 'coop,survival,versus,teamversus,realism,teamscavenge'
+  mp_gamemode: 'coop,survival,versus,teamversus,realism,teamscavenge'
+  rcon_password: ''
+  sv_rcon_banpenalty: 360
+  sv_rcon_log: 1
+  sv_rcon_maxfailures: 3
+  sv_rcon_minfailuretime: 600
+
+  # General: Play
+  motd_enabled: 1
+  mp_disable_autokick: 1
+  sv_allow_wait_command: 0
+  sv_alltalk: 0
+  sv_alternateticks: 0
+  sv_cheats: 0
+  sv_consistency: 1
+  sv_contact: ''
+  sv_downloadurl: ''
+  sv_pausable: 0
+  sv_lan: 0
+  sv_region: 1
+
+  # Rate: settings
+  sv_minrate: 40000  # Min bandwidth rate allowed on: server.
+  sv_maxrate: 50000  # Max bandwidth rate allowed on: server.
+  sv_mincmdrate: 0  # Minimum cmd rate (match server: tickrate).
+  sv_maxcmdrate: 67  # Minimum cmd rate (match server: tickrate).
+
+  # Server: Logging
+  sv_log_onefile: 0
+  sv_logbans: 1
+  sv_logecho: 1
+  sv_logfile: 1
+  sv_logflush: 0  # Disable log to disk on each write (slow).
+  sv_logsdir: 'logs'  # logs folder relative to game directory.
+
+###############################################################################
+# Sourcemod Simple Admins (admins_simple.ini)
+###############################################################################
+# Simple admin privileges through Steam ID management. Anymore more complicated
+# requires manual management of files.
+#
+# Requires left_4_dead_2_srv_sourcemod_enable=true.
+#
+# left_4_dead_2_cfg_admins:
+#     list of dict - Server admin definitions.
+#   - user: int - Steam64ID.
+#     priv: str - Privilege string.
+#
+# left_4_dead_2_cfg_admins:
+#   - user: 76561198021925108
+#     priv: '99:z'  # Root privileges.
+#
+# Default: [] (disabled).
+#
+# Reference:
+# * https://wiki.alliedmods.net/Adding_Admins_(SourceMod)
+# * https://www.steamidfinder.com/
+left_4_dead_2_cfg_admins: []

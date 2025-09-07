@@ -1,30 +1,26 @@
-.. _service-steam:
+.. _service-steam-left-4-dead-2:
 
-Steam
-#####
-Steam dedicated servers with steamcmd and wine.
-
-.. toctree::
-  :hidden:
-  :maxdepth: -1
-
-  conan_exiles
-  left_4_dead
-  left_4_dead_2
-  satisfactory
-  seven_days_to_die
-  troubleshooting
+Left 4 Dead 2
+#############
+`Left 4 Dead 2 <https://www.l4d.com/blog/>`_ dedicated server on steam.
 
 .. role:: steam
-  :service_doc: https://developer.valvesoftware.com/wiki/SteamCMD
-  :blocking:    Require upstream repo update, wine dependency updates.
+  :service_doc: https://developer.valvesoftware.com/wiki/List_of_L4D2_Cvars
   :private:
   :update:      2022-10-10
   :open:
 
-  Role handles configuration of all provided games servers. See each game for
-  game-specific documentation.
+  Left 4 Dead 2 dedicated server.
+
+  * Role handles all steps that are provided in this documentation.
+  * CVars have undocumented changes from Left 4 Dead; authoritative list of
+    CVars is in role.
+  * Metamod and Sourcemod are automatically installed.
+
+Ports
+*****
+.. literalinclude:: ../defaults/main/conan_exiles/ports.yml
 
 Defaults
 ********
-.. literalinclude:: ../defaults/main/main.yml
+.. literalinclude:: ../defaults/main/conan_exiles/main.yml

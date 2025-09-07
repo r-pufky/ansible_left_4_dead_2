@@ -1,0 +1,105 @@
+---
+###############################################################################
+# Config
+###############################################################################
+# Steam user login is ONLY required for download, not running service.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Linux
+# * http://developer.valvesoftware.com/wiki/Command_line_options
+
+- name: 'Config | set motd.txt'
+  ansible.builtin.copy:
+    dest: '{{ _left_4_dead_2.base ~ "/motd.txt" }}'
+    owner: '{{ _left_4_dead_2.uid }}'
+    group: '{{ _left_4_dead_2.gid }}'
+    mode: '0644'
+    content: '{{ left_4_dead_2_cfg_motd }}'
+
+- name: 'Config | set host.txt'
+  ansible.builtin.copy:
+    dest: '{{ _left_4_dead_2.base ~ "/host.txt" }}'
+    owner: '{{ _left_4_dead_2.uid }}'
+    group: '{{ _left_4_dead_2.gid }}'
+    mode: '0644'
+    content: '{{ left_4_dead_2_cfg_host }}'
+
+- name: 'Config | set server.cfg'
+  ansible.builtin.template:
+    src: 'server.cfg.j2'
+    dest: '{{ _left_4_dead_2.config ~ "/server.cfg" }}'
+    owner: '{{ _left_4_dead_2.uid }}'
+    group: '{{ _left_4_dead_2.gid }}'
+    mode: '0644'
+  vars:
+    server: '{{ left_4_dead_2_cfg_server }}'
+
+- name: 'Config | set admins_simple.ini'
+  when: left_4_dead_2_srv_sourcemod_enable
+  ansible.builtin.template:
+    src: 'admins_simple.ini.j2'
+    dest: '{{ _left_4_dead_2.sm_admin_config }}'
+    owner: '{{ _left_4_dead_2.uid }}'
+    group: '{{ _left_4_dead_2.gid }}'
+    mode: '0600'
+
+- name: 'Config | create service'
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'left_4_dead_2'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Left 4 Dead 2 Dedicated Server'
+          after:
+            - 'network.target'
+        service:
+          type: 'simple'
+          exec_start_pre:
+            - >-
+              /usr/games/steamcmd
+              +@sSteamCmdForcePlatformType {{ left_4_dead_2_role_platform }}
+              +force_install_dir {{ left_4_dead_2_srv_root }}
+              +login anonymous
+              +app_update {{ left_4_dead_2_role_app_id }}
+              {{ left_4_dead_2_srv_extra_opts }}
+              +quit
+          exec_start:
+            - >-
+              {{ left_4_dead_2_srv_root }}/srcds_run
+              +console
+              +game left4dead2
+              {{ left_4_dead_2_srv_launch_options | join(" ") }}
+              +exec server.cfg
+              +pidfile /tmp/left_4_dead_2.pid
+          pid_file: '/run/left_4_dead_2.pid'
+          timeout_start_sec: 'infinity'
+          restart: 'always'
+        exec:
+          # limitNOFILE default is 524288 in Trixie.
+          user: '{{ _left_4_dead_2.user }}'
+          group: '{{ _left_4_dead_2.group }}'
+          working_directory: '{{ left_4_dead_2_srv_root }}'
+          environment:
+            - var: 'LD_LIBRARY_PATH'
+              value:
+                '{{ left_4_dead_2_srv_root }}:{{ left_4_dead_2_srv_root }}/bin'
+        install:
+          wanted_by:
+            - 'multi-user.target'
+
+- name: 'Config | flush handlers'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Config | start services'
+  ansible.builtin.systemd:
+    name: 'Config | {{ item }}'
+    enabled: true
+    daemon_reload: true
+    state: 'started'
+  failed_when: false
+  loop:
+    - 'left_4_dead_2.service'

@@ -4,6 +4,12 @@ Left 4 Dead 2 dedicated server.
 ## Requirements
 [supported platforms](https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/meta/main.yml)
 
+Resources | Minimum | Recommended
+----------|---------|----------------------------------------------
+CPU       | 2c/2t   | 4c/8t@2.8Ghz
+RAM       | 2GB     | 4GB
+Disk      | 9GB     | 10GB (metamod, sourcemod; no additional mods)
+
 ## Role Variables
 [defaults](https://github.com/r-pufky/ansible_left_4_dead_2/tree/main/defaults/main)
 

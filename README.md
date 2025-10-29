@@ -84,7 +84,8 @@ metamod and sourcmod; granting admin privileges.
 
 Changes updating the configuration only can be done to speed role application:
 ``` bash
-ansible-playbook site.yml --tags l4d -e 'left_4_dead_2_srv_update_server=false'
+ansible-playbook site.yml --tags l4d \
+  -e '{"left_4_dead_2_srv_update_server": false}'
 ```
 
 ## Troubleshooting

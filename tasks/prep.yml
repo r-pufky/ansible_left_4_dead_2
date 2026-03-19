@@ -1,81 +1,68 @@
 ---
-# yamllint disable rule:line-length
+
 ###############################################################################
-# Prep
+# Pre Execution Tasks
 ###############################################################################
+# Only use data annotations in role after merging role, defaults, runtime data.
 # Service may not exist if first install.
 
-- name: 'Prep | assert required steam login'
-  when: left_4_dead_2_srv_sourcemod_enable
+# task not updated.
+- name: 'Prep | fact | record start time'
+  ansible.builtin.set_fact:
+    left_4_dead_2__srv: "{{ left_4_dead_2___release | r_pufky.data.v3(
+
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
+        _steam_user=left_4_dead_2_srv_steam_user | b64encode,
+        _steam_pass=left_4_dead_2_srv_steam_pass | b64encode,
+        _mod_branch=left_4_dead_2_srv_mod_branch,
+        _mm_build=left_4_dead_2_srv_mm_build,
+        _sm_build=left_4_dead_2_srv_sm_build,
+
+        _update_opts=left_4_dead_2_srv_update_opts | join(' '),
+        _launch_opts=left_4_dead_2_srv_launch_opts | join(' '),
+      ) }}"
+    left_4_dead_2__cfg: "{{ left_4_dead_2___app | r_pufky.data.v3(
+
+        _host=left_4_dead_2_cfg_host,
+        _motd=left_4_dead_2_cfg_motd,
+        _server=left_4_dead_2_cfg_server,
+        _admins=left_4_dead_2_cfg_admins,
+      ) }}"
+
+- name: 'Prep | assert | steam login required'
+  when: left_4_dead_2_flg_sourcemod
   ansible.builtin.assert:
     quiet: true
     that:
       - left_4_dead_2_srv_steam_user | length > 0
       - left_4_dead_2_srv_steam_pass | length > 0
     fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │                       Steam login required.                       │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ Left 4 Dead 2 requires a steam account with L4D2 entitlements as of
-      │ 2025-11-26.
-      │
-      │ Steam Gaurd prompts will still occur.
-      │
-      │ left_4_dead_2_srv_steam_user: {{ left_4_dead_2_srv_steam_user }}
-      │ left_4_dead_2_srv_steam_pass: {{ left_4_dead_2_srv_steam_pass }}
 
-- name: 'Prep | assert required sourcemod options'
-  when: left_4_dead_2_srv_sourcemod_enable
+      ✘ Steam login required.
+
+      Left 4 Dead 2 requires a steam account with L4D2 entitlements as of
+      2025-11-26.
+
+      Steam Guard prompts will still occur.
+
+      left_4_dead_2_srv_steam_user: {{ left_4_dead_2_srv_steam_user }}
+      left_4_dead_2_srv_steam_pass: {{ left_4_dead_2_srv_steam_pass }}
+
+- name: 'Prep | assert | admins enabled and sourcemod installed'
+  when: left_4_dead_2__cfg._admins | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
-      - left_4_dead_2_srv_sourcemod_branch | length > 0
-      - left_4_dead_2_srv_sourcemod_build | length > 0
+      - left_4_dead_2_flg_sourcemod
     fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │           Enabling sourcemod requires branch and build.           │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ left_4_dead_2_srv_sourcemod_branch: {{ left_4_dead_2_srv_sourcemod_branch }}
-      │ left_4_dead_2_srv_sourcemod_build: {{ left_4_dead_2_srv_sourcemod_build }}
 
-- name: 'Prep | assert required metamod options'
-  when: left_4_dead_2_srv_metamod_enable
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - left_4_dead_2_srv_metamod_branch | length > 0
-      - left_4_dead_2_srv_metamod_build | length > 0
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │            Enabling metamod requires branch and build.            │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ left_4_dead_2_srv_metamod_branch: {{ left_4_dead_2_srv_metamod_branch }}
-      │ left_4_dead_2_srv_metamod_build: {{ left_4_dead_2_srv_metamod_build }}
+      ✘ Simple admins require sourcemod enabled.
 
-- name: 'Prep | assert required admin options'
-  when: left_4_dead_2_cfg_admins | length > 0
-  ansible.builtin.assert:
-    quiet: true
-    that: left_4_dead_2_srv_sourcemod_enable
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │             Simple admins require sourcemod enabled.              │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ left_4_dead_2_srv_sourcemod_enable: {{ left_4_dead_2_srv_sourcemod_enable }}
-      │ left_4_dead_2_cfg_admins: {{ left_4_dead_2_cfg_admins }}
+      left_4_dead_2_flg_sourcemod: {{ left_4_dead_2_flg_sourcemod }}
+      left_4_dead_2_cfg_admins: {{ left_4_dead_2__cfg._admins }}
 
-- name: 'Prep | stop services'
+- name: 'Prep | systemd | stop left_4_dead_2.service'
   ansible.builtin.systemd:
-    name: '{{ item }}'
+    name: 'left_4_dead_2.service'
     state: 'stopped'
   failed_when: false
-  loop:
-    - 'left_4_dead_2.service'

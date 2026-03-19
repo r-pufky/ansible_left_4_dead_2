@@ -3,27 +3,20 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /home/steam/left_4_dead_2'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'file.yml'
-      vars:
-        test_name: 'Verify | /home/steam/left_4_dead_2'
-        test_file: '/home/steam/left_4_dead_2'
-        test_owner: 'steam'
-        test_group: 'steam'
-        test_mode: '0755'
-        test_state: 'directory'
-        test_diff: true
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
+          }}'
 
-    - name: 'Verify | game configs'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_dir }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Verify | game configs | {{ item }}'
-        test_src: 'files/{{ item }}'
-        test_file: '{{ "/home/steam/left_4_dead_2/left4dead2/" ~ item }}'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_dir }}'
+        test_src: '{{ "files/" ~ item }}'
+        test_file: '{{ left_4_dead_2___app._app_dir ~ "/" ~ item }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0644'
@@ -32,30 +25,27 @@
         - 'motd.txt'
         - 'host.txt'
 
-    - name: 'Verify | server.cfg'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_dir }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Verify | server.cfg'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_dir }}'
         test_src: 'files/server.cfg'
-        test_file: '/home/steam/left_4_dead_2/left4dead2/cfg/server.cfg'
+        test_file: '{{ left_4_dead_2___app._cfg_dir ~ "/server.cfg" }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0644'
         test_diff: true
 
-    - name: 'Verify | admins_simple.ini'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._admins_file }}'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Verify | admins_simple.ini'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._admins_file }}'
         test_src: 'files/admins_simple.ini'
-        test_file: '{{
-            "/home/steam/left_4_dead_2/addons/sourcemod/configs/" ~
-            "admins_simple.ini"
-          }}'
+        test_file: '{{ left_4_dead_2___app._admins_file }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0600'

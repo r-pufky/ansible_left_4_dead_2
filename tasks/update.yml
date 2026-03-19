@@ -1,0 +1,74 @@
+---
+###############################################################################
+# Install
+###############################################################################
+# WARNING:
+# > L4D2 requires valid Steam login with entitlements as of 2024-11-26. Errors
+# > during download with RC=5 (Rate Limit Exceeded) REQUIRES a delay of 12-24
+# > hours before attempting again, per Steam. This is non-negotiable.
+#
+# Temporarily deploy a base64 encoded file containing steam user/password for
+# authenticating to steam to generation an authorization token for steamcmd.
+# This is required for L4D2 to be downloaded. Once the token is generated
+# remove the temporary file.
+#
+# Install location is relative to base installation directory. This is **NOT**
+# customizable, contrary to many mis-documented Internet configurations.
+#
+# server.cfg must be located in left4dead2/cfg and can only be referenced on
+# start using the relative path from that location (server.cfg).
+#
+# Valve disabled 'sv_password' for L4D2; will get prompts but login will fail.
+# Use group management & sv_search_key to restrict to a group of players or
+# remove server advertisement and direct connect.
+#
+# Reference:
+# * https://github.com/r-pufky/steam/blob/master/docs/examples/left-4-dead.md
+# * https://old.reddit.com/r/l4d2/comments/1jkrr6/dedicated_server_problems/
+# * https://forums.srcds.com/viewtopic/17642
+
+# Passwords with special characters fail spectacularly when run through
+# shell > yaml > ansible > ansiballz > python > bash. Instead temporarily
+# store login credentials base64 encoded in a secured file, and destroy
+# immediately after successful login and authentication token cache.
+- name: 'Update | filesystem | cache login credentials'
+  ansible.builtin.template:
+    src: 'steamcmd.env.j2'
+    dest: '{{ left_4_dead_2__cfg._env_file }}'
+    owner: '{{ steam__ctx._user }}'
+    group: '{{ steam__ctx._group }}'
+    mode: '0400'
+
+- name: 'Update | steamcmd | ⚠ ACTION REQUIRED ⚠'
+  ansible.builtin.debug:
+    msg: |
+
+      ⚠ ACTION REQUIRED ⚠
+
+      Approve Steam Guard Login Request.
+
+      🗘 A Steam Guard login request should appear shortly (up to 60s) 🗘
+      * Relaunch Steam app if nothing appears.
+      * Server will be updated after approval. This may take a few minutes.
+
+      🗘 Updating ~7.5GB (~5 minutes @ 200Mbps). 🗘
+
+- name: '{{ "Update | steamcmd | update " ~ left_4_dead_2__srv._app_id }}'
+  ansible.builtin.shell: '{{
+      "source " ~ left_4_dead_2__cfg._env_file ~ " && " ~
+      left_4_dead_2__cfg._steamcmd ~
+      "+login $STEAM_USER $STEAM_PASS " ~
+      "+app_update " ~ left_4_dead_2__srv._app_id ~
+      left_4_dead_2__srv._update_opts ~ " +quit"
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ steam__ctx._home }}'
+  changed_when: false
+  become: true
+  become_user: '{{ steam__ctx._user }}'
+
+- name: 'Update | filesystem | remove login credentials'
+  ansible.builtin.file:
+    path: '{{ steam__ctx._user }}'
+    state: 'absent'

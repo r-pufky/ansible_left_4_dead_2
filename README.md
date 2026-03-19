@@ -1,45 +1,55 @@
 # Left 4 Dead 2
 Left 4 Dead 2 dedicated server.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/meta/main.yml)
+## [Requirements][i]
+Requires [r_pufky.game][g] galaxy-ng collection.
 
-Resources | Minimum | Recommended
-----------|---------|----------------------------------------------
-CPU       | 2c/2t   | 4c/8t@2.8Ghz
-RAM       | 2GB     | 4GB
-Disk      | 9GB     | 10GB (metamod, sourcemod; no additional mods)
+  Resource | Minimum | Recommended
+ ----------|---------|-------------
+  CPU      | 2c/2t   | 4c/8t @2.8Ghz
+  RAM      | 2GB     | 4GB
+  Disk     | 7.5GB   | 10GB (without additional mods)
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_left_4_dead_2/tree/main/defaults/main)
+Detailed variable use documented in defaults. See usage for role operation.
 
-### Ports
-All ports and protocols have been defined for the role.
+* [defaults][j] - User configurable options.
 
-[defaults/ports.yml](https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/defaults/main/ports.yml)
+* [ports][k] - Ports are **not** managed (defined for external use).
 
-## Dependencies
-**galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.game](https://github.com/r-pufky/ansible_collection_game) collection.
+## Usage
 
-## Example Playbook
-WARNING
-> L4D2 install requires valid Steam login with entitlements as of 2024-11-26.
-> Steam Guard users MUST approve login on phone during role execution. Login
-> is not required after dedicated server files downloaded.
+### Warning
+> [L4D2 requires valid Steam login with entitlements as of 2024-11-26.][l]
+> Errors during download with RC=5 (Rate Limit Exceeded) REQUIRES a delay of
+> 12-24 hours before attempting again, per Steam. This is non-negotiable.
+> See [Rate Limit Exceeded](#rate-limit-exceeded).
+>
+> A Steam Guard login request should appear during role application if enabled.
+> * Relaunch Steam app if nothing appears.
+> * Server will be updated after approval. This may take a few minutes.
 
-Read defaults documentation.
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
 
-The following example will get an instance quickly up and running. Server will
-be created using the steamcmd user from `r_pufky.game.steam` and install both
-metamod and sourcmod; granting admin privileges.
+  Step | Flag                        | Notes
+ ------|-----------------------------|-------
+  1    | left_4_dead_2_flg_update    | Update server on launch or if already installed.
+  2    | left_4_dead_2_flg_config    | Set configuration files.
+  3    | left_4_dead_2_flg_metamod   | Install Metamod.
+  3    | left_4_dead_2_flg_sourcemod | Install Sourcemod.
+
+### Example Playbooks
+
 ``` yaml
-- name: 'Left 4 Dead 2 server'
+- name:  'Left 4 Dead 2 Server with metamod, sourcemod and admin users.'
   hosts: 'l4d2.example.com'
   become: true
   roles:
      - 'r_pufky.game.left_4_dead_2'
   vars:
+    left_4_dead_2_srv_steam_user: 'SteamUser'
+    left_4_dead_2_srv_steam_pass: '{{ vault_steam_password }}'
     left_4_dead_2_cfg_host: 'My host message.'
     left_4_dead_2_cfg_motd: 'Have fun!'
     left_4_dead_2_cfg_server:
@@ -82,12 +92,6 @@ metamod and sourcmod; granting admin privileges.
         priv: '99:z'  # Root privileges.
 ```
 
-Changes updating the configuration only can be done to speed role application:
-``` bash
-ansible-playbook site.yml --tags l4d \
-  -e '{"left_4_dead_2_srv_update_server": false}'
-```
-
 ## Troubleshooting
 
 ### Rate Limit Exceeded
@@ -96,36 +100,32 @@ trying again.
 
 Steam service will timeout invalid logins for users after a given amount. You
 must wait before trying again. Additional attempts before timeout expires will
-only extend the timeout and potentially disable your account.
+only extend the timeout and potentially **disable** your account.
 
 Ensure:
 * **!unsafe** is used with `left_4_dead_2_srv_steam_pass`.
 * `left_4_dead_2_srv_steam_user` is set.
 
 ## Development
-Configure [environment](https://r-pufky.github.io/ansible_collection_docs/ansible/environment)
+Configure [environment][a].
 
-Run all unit tests:
 ``` bash
+# Run all tests.
 molecule test --all
 ```
 
-### Releases
-Release format: **{OS}-{SERVICE}-{ROLE}**
+Testing variables:
 
-Each type inherits the versioning system used; defaulting to schematic
-versioning.
+  Variable          | type | Description
+ -------------------|------|-------------
+  url_inject_enable | bool | Disable **get_url** to inject files locally.
 
-`12.0.0-2.0.3-1.0.0`
+### [Releases][b]
 
-* 12.0.0 - Debian 12 (bookworm).
-* 2.0.3 - Service/app version.
-* 1.0.0 - Role version.
-
-Releases are branched on Debian releases:
-
-* **[13.x.x](https://github.com/r-pufky/ansible_left_4_dead_2)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_left_4_dead_2/tree/12.x)**: 12 Bookworm.
+  Release | Debian | Ansible | Notes
+ ---------|--------|---------|-------
+  2.x.x   | 13     | 2.20    | Ansible 2.20, feature flags, and semantic versioning.
+  1.x.x   | 12     | 2.11    | Migration from private repository.
 
 ## Issues
 Create a bug and provide as much information as possible.
@@ -133,9 +133,21 @@ Create a bug and provide as much information as possible.
 Associate pull requests with a submitted bug.
 
 ## License
-[AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
- [(direct link)](https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/LICENSE)
+[AGPL-3.0 License][c] | [direct link][f]
 
 ## Author Information
-PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
-| [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)
+PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
+
+
+[a]: https://r-pufky.github.io/ansible_docs
+[b]: https://semver.org/spec/v2.0.0
+[c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
+[d]: https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+[e]: https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22
+
+[f]: https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/LICENSE
+[g]: https://github.com/r-pufky/ansible_collection_game
+[i]: https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/meta/main.yml
+[j]: https://github.com/r-pufky/ansible_left_4_dead_2/tree/main/defaults/main/main.yml
+[k]: https://github.com/r-pufky/ansible_left_4_dead_2/blob/main/defaults/main/ports.yml
+[l]: https://github.com/ValveSoftware/steam-for-linux/issues/11522

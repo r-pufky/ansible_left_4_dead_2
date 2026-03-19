@@ -1,0 +1,44 @@
+---
+###############################################################################
+# Left 4 Dead 2 Role Options
+###############################################################################
+#
+# Updates:
+# * Version is located in 'left4dead2/steam.inf'.
+# * KEEP a separate change log as changes are made.
+# * Use bare-metal docs to validate package/process changes.
+# * Update defaults.
+# * Update tests for any changes.
+# * Standard validation testing (yamllint, ansible-lint, to-do, no-qa).
+#
+# Reference:
+# * https://left4dead.miraheze.org/wiki/Left_4_Dead_Wiki
+
+left_4_dead_2___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2026-03-18',
+    _debian='trixie',
+    _version='2.2.4.3',
+    _app_id=222860,
+    _platform='linux',
+  ) }}"
+
+left_4_dead_2___app: "{{ {} | r_pufky.data.v3(
+
+    _app='/home/steam/left_4_dead_2/srcds_run',
+    _root_dir='/home/steam/left_4_dead_2',
+    _app_dir='/home/steam/left_4_dead_2/left4dead2',
+    _cfg_dir='/home/steam/left_4_dead_2/left4dead2/cfg',
+    _motd_file='/home/steam/left_4_dead_2/left4dead2/motd.txt',
+    _host_file='/home/steam/left_4_dead_2/left4dead2/host.txt',
+    _server_file='/home/steam/left_4_dead_2/left4dead2/cfg/server.cfg',
+    _admins_file=(
+      '/home/steam/left_4_dead_2/addons/sourcemod/configs/admins_simple.ini'
+    ),
+    _env_file='/home/steam/.steam/.env',
+    _steamcmd=(
+      '/usr/games/steamcmd ' ~
+      '+@sSteamCmdForcePlatformType ' ~ left_4_dead_2___release._platform ~
+      ' +force_install_dir /home/steam/left_4_dead_2 '
+    ),
+  ) }}"

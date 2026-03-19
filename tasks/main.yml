@@ -1,9 +1,35 @@
 ---
 - name: 'Prep'
-  ansible.builtin.include_tasks: 'prep.yml'
+  ansible.builtin.import_tasks: 'prep.yml'
 - name: 'Install'
-  ansible.builtin.include_tasks: 'install.yml'
+  ansible.builtin.import_tasks: 'install.yml'
+
+- name: 'Update'
+  when: left_4_dead_2_flg_update or not left_4_dead_2__cfg._is_installed
+  ansible.builtin.import_tasks: 'update.yml'
+
+- name: 'Metamod'
+  ansible.builtin.import_tasks: 'mod.yml'
+  vars:
+    mod_name: 'metamod'
+    mod_archive: '{{ steam__ctx._metamod_archive }}'
+    mod_version: '{{ steam__ctx._metamod_version }}'
+    mod_dirs: '{{ steam__ctx._metamod_dirs }}'
+    mod_files: '{{ steam__ctx._metamod_files }}'
+    mod_enable: '{{ left_4_dead_2_flg_metamod }}'
+
+# Always install sourcemod after metamod (sourcemod places files in metamod).
+- name: 'Sourcemod'
+  ansible.builtin.import_tasks: 'mod.yml'
+  vars:
+    mod_name: 'sourcemod'
+    mod_archive: '{{ steam__ctx._sourcemod_archive }}'
+    mod_version: '{{ steam__ctx._sourcemod_version }}'
+    mod_dirs: '{{ steam__ctx._sourcemod_dirs }}'
+    mod_files: '{{ steam__ctx._sourcemod_files }}'
+    mod_enable: '{{ left_4_dead_2_flg_sourcemod }}'
+
 - name: 'Config'
-  ansible.builtin.include_tasks: 'config.yml'
-- name: 'Validate'
-  ansible.builtin.include_tasks: 'validate.yml'
+  ansible.builtin.import_tasks: 'config.yml'
+- name: 'Start'
+  ansible.builtin.import_tasks: 'start.yml'

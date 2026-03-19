@@ -1,0 +1,30 @@
+---
+###############################################################################
+# Start
+###############################################################################
+# Ensure services and confirm they are active and running.
+
+- name: 'Start | systemd | left_4_dead_2.service'
+  ansible.builtin.systemd:
+    name: 'left_4_dead_2.service'
+    state: 'started'
+    enabled: true
+    daemon_reload: true
+  delay: 15
+  retries: 3
+  register: left_4_dead_2__service
+  until: left_4_dead_2__service.status.ActiveState == 'active'
+
+- name: 'Start | query service status'
+  ansible.builtin.service_facts:
+
+- name: 'Start | assert | left_4_dead_2.service running'
+  ansible.builtin.assert:
+    quiet: true
+    that: ansible_facts.services[item].state == 'running'
+    fail_msg: |
+
+      ✘ Service should be running.
+      {{ item }}
+  loop:
+    - 'left_4_dead_2.service'

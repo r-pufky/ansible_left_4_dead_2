@@ -1,0 +1,61 @@
+---
+###############################################################################
+# Source Mods
+###############################################################################
+# Install source mods. Source mod archive must be pre-staged. Each mod installs
+# portions of the other when unpacking, resulting in files that may need to be
+# removed between steps, depending on the specific game setup.
+#
+# Dirs used to locate module install location.
+#
+# Dirs + files are used to locate install mod location.
+#
+# Args:
+#   mod_name: str - Mod name.
+#   mod_archive: str - Absolute path to Sourcemod archive.
+#   mod_version: str - Sourcemod parsed version string.
+#   mod_dirs: list of str - Relative Sourcemod install directories.
+#   mod_files: list of str - Relative Sourcemod install files.
+#   mod_enable: bool - Enable or Disable mod.
+#
+# Reference:
+# * https://wiki.alliedmods.net/Installing_Metamod:Source
+# * https://wiki.alliedmods.net/Installing_SourceMod
+
+- name: '{{
+      "Mod | filesystem | get " ~
+      left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version"
+    }}'
+  ansible.builtin.slurp:
+    src: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version" }}'
+  failed_when: false
+  register: left_4_dead__cmd
+
+- name: '{{ "Mod | filesystem | " ~ mod_name }}'
+  when: >
+    left_4_dead__cmd.content | default('Cg==') | b64decode != mod_version and
+    mod_enable
+  block:
+    - name: '{{ "Mod | filesystem | unpack " ~ mod_name }}'
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: '{{ mod_archive }}'
+        dest: '{{ left_4_dead_2__cfg._root_dir }}'
+        owner: '{{ steam__ctx._user }}'
+        group: '{{ steam__ctx._group }}'
+        creates: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/bin" }}'
+
+    - name: 'Install | source mods | tag {{ mod_name }}'
+      ansible.builtin.copy:
+        dest: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version" }}'
+        owner: '{{ steam__ctx._user }}'
+        group: '{{ steam__ctx._group }}'
+        mode: '0644'
+        content: '{{ mod_version }}'
+
+- name: '{{ "Mod | filesystem | remove " ~ mod_name }}'
+  when: not mod_enable
+  ansible.builtin.file:
+    path: '{{ left_4_dead_2__cfg._root_dir ~ item }}'
+    state: 'absent'
+  loop: '{{ mod_dirs + mod_files | flatten | unique }}'

@@ -3,29 +3,28 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Converge | ACTION REQUIRED ⚠'
-      when: >
-        left_4_dead_2_srv_steam_user | default('') | length == 0 or
-        left_4_dead_2_srv_steam_pass | default('') | length == 0
-      ansible.builtin.fail:
-        msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │                Left 4 Dead 2 REQUIRES Steam login.                │
-          │                                                                   │
-          ├───────────────────────────────────────────────────────────────────╯
-          │ Configure Steam Account:
-          │
-          │   * left_4_dead_2_srv_steam_user
-          │   * left_4_dead_2_srv_steam_pass
-          │
-          │ Example:
-          │
-          │   molecule test -- -v -e \
-          │     'left_4_dead_2_srv_steam_user=Username \
-          │      left_4_dead_2_srv_steam_pass=Password'
+    - name: 'Converge | assert | ⚠ ACTION REQUIRED ⚠'
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - left_4_dead_2_srv_steam_user | default('') | length > 0
+          - left_4_dead_2_srv_steam_pass | default('') | length > 0
+        fail_msg: |
 
-    - name: 'Converge | apply r_pufky.game.left_4_dead_2'
+          ✘ Left 4 Dead 2 REQUIRES Steam login.
+
+          Configure Steam Account:
+
+          * left_4_dead_2_srv_steam_user
+          * left_4_dead_2_srv_steam_pass
+
+          Example:
+
+          molecule test -- -v -e \
+            'left_4_dead_2_srv_steam_user=Username \
+             left_4_dead_2_srv_steam_pass=Password'
+
+    - name: 'Converge | role | r_pufky.game.left_4_dead_2'
       when: >
         left_4_dead_2_srv_steam_user | length > 0 and
         left_4_dead_2_srv_steam_pass | length > 0

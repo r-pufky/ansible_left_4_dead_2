@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Default
 ###############################################################################
@@ -16,55 +17,50 @@
 dependency:
   name: 'galaxy'
 driver:
-  name: 'podman'
+  name: 'vagrant'
+  provider:
+    name: 'libvirt'
+    type: 'libvirt'
 provisioner:
   name: 'ansible'
+  connection_options:
+    ansible_ssh_user: 'vagrant'
+    ansible_become: true
   config_options:
     defaults:
       interpreter_python: 'auto_silent'
       callback_whitelist: 'profile_tasks, timer, yaml'
-    ssh_connection:
-      pipelining: false
   inventory:
     group_vars:
       all:
-        left_4_dead_2_srv_metamod_enable: true
-        left_4_dead_2_srv_sourcemod_enable: true
+        url_inject_enable: true
         left_4_dead_2_cfg_admins:
           - user: 76561198021925107
             priv: '99:z'  # Root privileges.
         left_4_dead_2_cfg_host: 'test server'
         left_4_dead_2_cfg_motd: 'test server'
 platforms:
-  - name: 'left_4_dead_2-debian-13-default'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-    published_ports:
-      - '27015:27015/udp'
-      - '27015:27015/tcp'
-      - '27016:27016/udp'
-      - '27016:27016/tcp'
+  - name: 'left-4-dead-2-default'
+    box: 'debian/trixie64'
+    memory: 4096
+    cpus: 2
+    interfaces:
+      - network_name: 'private_network'
+        auto_config: true
+        type: 'dhcp'
+    instance_raw_config_args:
+      - 'vm.network "forwarded_port", guest: 27015, host: 27015, protocol: "udp"'
+      - 'vm.network "forwarded_port", guest: 27015, host: 27015, protocol: "tcp"'
+      - 'vm.network "forwarded_port", guest: 27016, host: 27016, protocol: "udp"'
+      - 'vm.network "forwarded_port", guest: 27016, host: 27016, protocol: "tcp"'
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
     - 'prepare'
     - 'converge'
-    # - 'idempotence'  # services always restarted.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

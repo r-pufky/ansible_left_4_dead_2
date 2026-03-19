@@ -1,12 +1,39 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
-# Left 4 Dead 2
+# Feature Flags
 ###############################################################################
-#       Minimum   Recommended
-# CPU:  2c/2t     4c/8t@2.8Ghz
-# RAM:  2GB       4GB
-# Disk: 9GB       10GB (metamod, sourcemod; no additional mods)
+
+# 1. Force Left 4 Dead 2 server updates if already installed?
 #
+# Server will be updated during role application and as a pre-start task for
+# service start. Disable to prevent updates after initial installation.
+#
+# Default: False.
+left_4_dead_2_flg_update: false
+
+# 2. Set configuration files? Default: True.
+left_4_dead_2_flg_config: true
+
+# 3. Enable Metamod installation?
+#
+# Install size: ~5MB
+#
+# Default: True.
+left_4_dead_2_flg_metamod: true
+
+# 4. Enable Sourcemod installation?
+#
+# Install size: ~200MB
+#
+# Enabling will automatically enable Metamod as a dependency.
+#
+# Default: True.
+left_4_dead_2_flg_sourcemod: true
+
+###############################################################################
+# Service
+###############################################################################
 # WARNING:
 # > L4D2 install requires valid Steam login with entitlements as of 2024-11-26.
 # > Steam Guard users MUST approve login on phone during role execution. Login
@@ -25,38 +52,19 @@ left_4_dead_2_srv_steam_user: ''
 # Default: ''.
 left_4_dead_2_srv_steam_pass: !unsafe ''
 
-# Root install location. Default: '/home/steam/left_4_dead_2'.
-left_4_dead_2_srv_root: '/home/steam/left_4_dead_2'
-
 # Additional steamcmd options to use during app_update.
 #
-# Such as validation (validate).
+# Use 'validate' to checksum installed files for corruption.
 #
-# Default: ''.
-#
-# Reference:
-# * https: //developer.valvesoftware.com/wiki/SteamCMD
-left_4_dead_2_srv_extra_opts: ''
-
-# Update Left 4 Dead 2 base server? Default: True.
-left_4_dead_2_srv_update_server: true
-
-# Validation delay (seconds).
-#
-# Specific machines may be slower to start dedicated server, resulting in
-# validation checks failing. This introduces a small delay to allow service
-# time to report running. 0 Disables.
-#
-# Default: 0 (seconds).
-left_4_dead_2_srv_validate_delay: 0
+# Default: [].
+left_4_dead_2_srv_update_opts: []
 
 # Server launch options.
 #
 # Command line options passed to dedicated server. Use only options that must
-# be set for service to start, and all others in left_4_dead_2_cfg_server.
+# be set for service to start. Place all other options in configuration files.
 #
-# Special Case:
-# * Automatically provides (Do not use): console, game, exec, pidfile.
+# Automatically configures service with: +console, +game, +exec, +pidfile.
 #
 # Default: .
 #   - '+map l4d_hospital01_apart'
@@ -66,76 +74,136 @@ left_4_dead_2_srv_validate_delay: 0
 #
 # Reference:
 # * http://developer.valvesoftware.com/wiki/Command_line_options
-left_4_dead_2_srv_launch_options:
+left_4_dead_2_srv_launch_opts:
   - '+map l4d_hospital01_apart'
   - '+port 27015'
   - '+maxplayers 4'
   - '+nohltv'
 
+# Meta/Source Mod
 ###############################################################################
-# Metamod Options
-###############################################################################
-# Provides 'SourceHook' which enables plugins for source games to intercept
-# calls (enables mod support).
+# Metamod and Sourcemod required matched branches to work correctly together.
 #
 # Reference:
-# * https: //www.sourcemm.net
+# * https://www.sourcemm.net/downloads.php/?branch=stable
+# * https://www.sourcemod.net/downloads.php?branch=stable
 
-# Enable Metamod installation?
-#
-# Metamod will be downloaded to /opt/metamod. Specific games must manually
-# install Metamod based on game requirements and locations.
-#
-# Default: True.
-left_4_dead_2_srv_metamod_enable: true
+# Mod branch. Default: '1.12'.
+left_4_dead_2_srv_mod_branch: '1.12'
 
-# Metamod branch.
-#
-# Default: '1.12'.
-#
-# Reference:
-# * https: //www.sourcemm.net/downloads.php?branch=stable
-left_4_dead_2_srv_metamod_branch: '1.12'
+# Metamod build. Default: '1219'.
+left_4_dead_2_srv_mm_build: '1219'
 
-# Metamod build.
-#
-# Default: '7210'.
-#
-# Reference:
-# * https: //www.sourcemm.net/downloads.php?branch=stable
-left_4_dead_2_srv_metamod_build: '1219'
+# Sourcemod build. Default: '7223'.
+left_4_dead_2_srv_sm_build: '7223'
 
 ###############################################################################
-# Sourcemod
+# Config
 ###############################################################################
-# SourceMod is server modification for any game that runs on the Half-Life 2
-# engine. It is a powerful, highly optimized platform for scripting plugins and
-# handling server administration. The default package comes with a base set of
-# plugins, but there are over 2,500 plugins in the community.
+
+# Host Message (host.txt)
+#
+# Contents for the HOST file. Generally these are very finicky and
+# mis-documented throughout the web.
+#
+# Special Case:
+# * Text (HTML preferred).
+# * URL to HTTP only, which will render the Host banner.
+#
+# Default: '' (disabled).
 #
 # Reference:
-# * https: //www.sourcemod.net
+# * http://www.custwiki.cyberwurx.com/index.php/Using_host.txt_for_a_Server_Banner
+left_4_dead_2_cfg_host: ''
 
-# Enable Sourcemod installation?
-#
-# Sourcemod will be downloaded to /opt/sourcemod. Specific games must manually
-# install Sourcemod based on game requirements and locations.
-#
-# Default: True.
-left_4_dead_2_srv_sourcemod_enable: true
 
-# Sourcemod branch.
+# Message of the Day (motd.txt)
 #
-# Default: '1.12'.
+# Contents for the MOTD file. Generally these are very finicky and
+# mis-documented throughout the web.
+#
+# Special Case:
+# * Text (HTML preferred).
+# * URL to HTTP only, which will render the MOTD banner.
+#
+# Default: '' (disabled).
 #
 # Reference:
-# * https: //www.sourcemod.net/downloads.php?branch=stable
-left_4_dead_2_srv_sourcemod_branch: '1.12'
+# * http://www.custwiki.cyberwurx.com/index.php/Using_host.txt_for_a_Server_Banner
+left_4_dead_2_cfg_motd: ''
 
-# Sourcemod build.
+# Server Configuration (server.cfg)
 #
-# Default: '7210'.
+# There are 4429+ configuration options for Left 4 Dead. Reasonable default
+# configuration provided below.
+#
+# Special Case:
+# * Valve disabled 'sv_password' for L4D2; will get password prompts on connect
+#   but login will fail. Use group management & 'sv_search_key' to restrict to
+#   a group of players. Alternatively remove server steam advertisements and
+#   direct connect.
 #
 # Reference:
-# * https: //www.sourcemod.net/downloads.php?branch=stable
-left_4_dead_2_srv_sourcemod_build: '7210'
+# * https://developer.valvesoftware.com/wiki/List_of_Left_4_Dead_2_console_commands_and_variables
+left_4_dead_2_cfg_server:
+  # Server
+  hostname: 'L4D2 Server'
+  sv_search_key: 'L4D2'
+  sv_allow_lobby_connect_only: 0
+  sv_steamgroup: 0
+  sv_steamgroup_exclusive: 0
+  sv_gametypes: 'coop,survival,versus,teamversus,realism,teamscavenge'
+  mp_gamemode: 'coop,survival,versus,teamversus,realism,teamscavenge'
+  rcon_password: ''
+  sv_rcon_banpenalty: 360
+  sv_rcon_log: 1
+  sv_rcon_maxfailures: 3
+  sv_rcon_minfailuretime: 600
+
+  # General: Play
+  motd_enabled: 1
+  mp_disable_autokick: 1
+  sv_allow_wait_command: 0
+  sv_alltalk: 0
+  sv_alternateticks: 0
+  sv_cheats: 0
+  sv_consistency: 1
+  sv_contact: ''
+  sv_downloadurl: ''
+  sv_pausable: 0
+  sv_lan: 0
+  sv_region: 1
+
+  # Rate: settings
+  sv_minrate: 40000  # Min bandwidth rate allowed on: server.
+  sv_maxrate: 50000  # Max bandwidth rate allowed on: server.
+  sv_mincmdrate: 0  # Minimum cmd rate (match server: tickrate).
+  sv_maxcmdrate: 67  # Minimum cmd rate (match server: tickrate).
+
+  # Server: Logging
+  sv_log_onefile: 0
+  sv_logbans: 1
+  sv_logecho: 1
+  sv_logfile: 1
+  sv_logflush: 0  # Disable log to disk on each write (slow).
+  sv_logsdir: 'logs'  # logs folder relative to game directory.
+
+# Sourcemod Simple Admins (admins_simple.ini)
+#
+# Simple admin privileges through Steam ID management.
+#
+# left_4_dead_2_cfg_admins:
+#     list of dict - Server admin definitions.
+#   - user: int - Steam64ID.
+#     priv: str - Privilege string.
+#
+# left_4_dead_2_cfg_admins:
+#   - user: 76561198021925108
+#     priv: '99:z'  # Root privileges.
+#
+# Default: [] (disabled).
+#
+# Reference:
+# * https://wiki.alliedmods.net/Adding_Admins_(SourceMod)
+# * https://www.steamidfinder.com/
+left_4_dead_2_cfg_admins: []

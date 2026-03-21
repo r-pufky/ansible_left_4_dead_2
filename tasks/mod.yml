@@ -45,7 +45,7 @@
         group: '{{ steam__ctx._group }}'
         creates: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/bin" }}'
 
-    - name: 'Install | source mods | tag {{ mod_name }}'
+    - name: 'Mod | source mods | tag {{ mod_name }}'
       ansible.builtin.copy:
         dest: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version" }}'
         owner: '{{ steam__ctx._user }}'

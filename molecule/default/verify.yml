@@ -9,14 +9,14 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
           }}'
 
-    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_dir }}'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_d }}'
       ansible.builtin.include_role:
         name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_dir }}'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._app_d }}'
         test_src: '{{ "files/" ~ item }}'
-        test_file: '{{ left_4_dead_2___app._app_dir ~ "/" ~ item }}'
+        test_file: '{{ left_4_dead_2___app._app_d ~ "/" ~ item }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0644'
@@ -25,27 +25,27 @@
         - 'motd.txt'
         - 'host.txt'
 
-    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_dir }}'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_d }}'
       ansible.builtin.include_role:
         name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_dir }}'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._cfg_d }}'
         test_src: 'files/server.cfg'
-        test_file: '{{ left_4_dead_2___app._cfg_dir ~ "/server.cfg" }}'
+        test_file: '{{ left_4_dead_2___app._cfg_d ~ "/server.cfg" }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0644'
         test_diff: true
 
-    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._admins_file }}'
+    - name: '{{ "Verify | test | " ~ left_4_dead_2___app._admin_ini }}'
       ansible.builtin.include_role:
         name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._admins_file }}'
+        test_name: '{{ "Verify | test | " ~ left_4_dead_2___app._admin_ini }}'
         test_src: 'files/admins_simple.ini'
-        test_file: '{{ left_4_dead_2___app._admins_file }}'
+        test_file: '{{ left_4_dead_2___app._admin_ini }}'
         test_owner: 'steam'
         test_group: 'steam'
         test_mode: '0600'

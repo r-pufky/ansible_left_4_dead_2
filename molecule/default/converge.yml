@@ -3,6 +3,12 @@
   hosts: 'all'
   gather_facts: false
   tasks:
+    # Unsafe must be set in converge.
+    - name: 'Converge | inject | steam credentials'
+      ansible.builtin.set_fact:
+        left_4_dead_2_srv_steam_user: ''
+        left_4_dead_2_srv_steam_pass: !unsafe ''
+
     - name: 'Converge | assert | ⚠ ACTION REQUIRED ⚠'
       ansible.builtin.assert:
         quiet: true
@@ -15,14 +21,9 @@
 
           Configure Steam Account:
 
+          Converge:
           * left_4_dead_2_srv_steam_user
           * left_4_dead_2_srv_steam_pass
-
-          Example:
-
-          molecule test -- -v -e \
-            'left_4_dead_2_srv_steam_user=Username \
-             left_4_dead_2_srv_steam_pass=Password'
 
     - name: 'Converge | role | r_pufky.game.left_4_dead_2'
       when: >

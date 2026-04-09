@@ -24,10 +24,10 @@
 
 - name: '{{
       "Mod | filesystem | get " ~
-      left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version"
+      left_4_dead_2___app._root_d ~ mod_dirs[0] ~ "/.version"
     }}'
   ansible.builtin.slurp:
-    src: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version" }}'
+    src: '{{ left_4_dead_2___app._root_d ~ mod_dirs[0] ~ "/.version" }}'
   failed_when: false
   register: left_4_dead__cmd
 
@@ -40,14 +40,14 @@
       ansible.builtin.unarchive:
         remote_src: true
         src: '{{ mod_archive }}'
-        dest: '{{ left_4_dead_2__cfg._root_dir }}'
+        dest: '{{ left_4_dead_2___app._root_d }}'
         owner: '{{ steam__ctx._user }}'
         group: '{{ steam__ctx._group }}'
-        creates: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/bin" }}'
+        creates: '{{ left_4_dead_2___app._root_d ~ mod_dirs[0] ~ "/bin" }}'
 
     - name: 'Mod | source mods | tag {{ mod_name }}'
       ansible.builtin.copy:
-        dest: '{{ left_4_dead_2__cfg._root_dir ~ mod_dirs[0] ~ "/.version" }}'
+        dest: '{{ left_4_dead_2___app._root_d ~ mod_dirs[0] ~ "/.version" }}'
         owner: '{{ steam__ctx._user }}'
         group: '{{ steam__ctx._group }}'
         mode: '0644'
@@ -56,6 +56,6 @@
 - name: '{{ "Mod | filesystem | remove " ~ mod_name }}'
   when: not mod_enable
   ansible.builtin.file:
-    path: '{{ left_4_dead_2__cfg._root_dir ~ item }}'
+    path: '{{ left_4_dead_2___app._root_d ~ item }}'
     state: 'absent'
   loop: '{{ mod_dirs + mod_files | flatten | unique }}'

@@ -34,7 +34,7 @@
 - name: 'Update | filesystem | cache login credentials'
   ansible.builtin.template:
     src: 'steamcmd.env.j2'
-    dest: '{{ left_4_dead_2__cfg._env_file }}'
+    dest: '{{ left_4_dead_2__cfg._env }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0400'
@@ -53,12 +53,12 @@
 
       🗘 Updating ~7.5GB (~5 minutes @ 200Mbps). 🗘
 
-- name: '{{ "Update | steamcmd | update " ~ left_4_dead_2__srv._app_id }}'
+- name: '{{ "Update | steamcmd | update " ~ left_4_dead_2___release._app_id }}'
   ansible.builtin.shell: '{{
-      "source " ~ left_4_dead_2__cfg._env_file ~ " && " ~
-      left_4_dead_2__cfg._steamcmd ~
+      "source " ~ left_4_dead_2__cfg._env ~ " && " ~
+      left_4_dead_2___app._steamcmd  ~
       "+login $STEAM_USER $STEAM_PASS " ~
-      "+app_update " ~ left_4_dead_2__srv._app_id ~
+      "+app_update " ~ left_4_dead_2___release._app_id ~
       left_4_dead_2__srv._update_opts ~ " +quit"
     }}'
   args:

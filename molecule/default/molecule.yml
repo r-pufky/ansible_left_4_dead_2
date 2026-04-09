@@ -33,7 +33,7 @@ provisioner:
   inventory:
     group_vars:
       all:
-        url_inject_enable: true
+        molecule_flg_inject: true
         left_4_dead_2_cfg_admins:
           - user: 76561198021925107
             priv: '99:z'  # Root privileges.

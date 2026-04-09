@@ -16,7 +16,7 @@
 
 - name: 'Install | filesystem | find current installation'
   ansible.builtin.stat:
-    path: '{{ left_4_dead_2__cfg._app }}'
+    path: '{{ left_4_dead_2___app._bin }}'
   register: left_4_dead_2__installed
 
 - name: 'Install | fact | set install state'
@@ -24,16 +24,16 @@
     left_4_dead_2__cfg: "{{ left_4_dead_2__cfg | r_pufky.data.v3(
 
         _is_installed=left_4_dead_2__installed.stat.exists,
-        _admins_file=(
-          left_4_dead_2__cfg._root_dir ~ steam__ctx._sourcemod_dirs[0] ~
+        _admin_ini=(
+          left_4_dead_2___app._root_d ~ steam__ctx._sourcemod_dirs[0] ~
           '/configs/admins_simple.ini'
         ),
-        _env_file=steam__ctx._home ~ '/.steam/.env',
+        _env=steam__ctx._home ~ '/.steam/.env',
       ) }}"
 
-- name: '{{ "Install | filesystem | " ~ left_4_dead_2__cfg._root_dir }}'
+- name: '{{ "Install | filesystem | " ~ left_4_dead_2___app._root_d }}'
   ansible.builtin.file:
-    path: '{{ left_4_dead_2__cfg._root_dir }}'
+    path: '{{ left_4_dead_2___app._root_d }}'
     owner: '{{ steam__ctx._uid }}'
     group: '{{ steam__ctx._gid }}'
     mode: '0755'

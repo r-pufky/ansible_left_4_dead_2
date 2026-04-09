@@ -21,7 +21,7 @@
         _update_opts=left_4_dead_2_srv_update_opts | join(' '),
         _launch_opts=left_4_dead_2_srv_launch_opts | join(' '),
       ) }}"
-    left_4_dead_2__cfg: "{{ left_4_dead_2___app | r_pufky.data.v3(
+    left_4_dead_2__cfg: "{{ {} | r_pufky.data.v3(
 
         _host=left_4_dead_2_cfg_host,
         _motd=left_4_dead_2_cfg_motd,

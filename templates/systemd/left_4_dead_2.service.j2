@@ -6,15 +6,15 @@ Wants=network.target
 [Service]
 Type=simple
 {% if left_4_dead_2_flg_update %}
-ExecStartPre={{ left_4_dead_2__cfg._steamcmd }} +login anonymous +app_update {{ left_4_dead_2__srv._app_id }} {{ left_4_dead_2__srv._update_opts }} +quit
+ExecStartPre={{ left_4_dead_2___app._steamcmd  }} +login anonymous +app_update {{ left_4_dead_2___release._app_id }} {{ left_4_dead_2__srv._update_opts }} +quit
 {% endif %}
-ExecStart={{ left_4_dead_2__cfg._app }} +console +game left4dead2 {{ left_4_dead_2__srv._launch_opts }} +exec server.cfg +pidfile /tmp/left_4_dead_2.pid
-WorkingDirectory={{ left_4_dead_2__cfg._root_dir }}
+ExecStart={{ left_4_dead_2___app._bin }} +console +game left4dead2 {{ left_4_dead_2__srv._launch_opts }} +exec server.cfg +pidfile /tmp/left_4_dead_2.pid
+WorkingDirectory={{ left_4_dead_2___app._root_d }}
 PIDFile=/run/left_4_dead_2.pid
 TimeoutStartSec=infinity
 Restart=always
 # limitNOFILE default is 524288 in Trixie.
-Environment="LD_LIBRARY_PATH={{ left_4_dead_2__cfg._root_dir }}:{{ left_4_dead_2__cfg._root_dir }}/bin"
+Environment="LD_LIBRARY_PATH={{ left_4_dead_2___app._root_d }}:{{ left_4_dead_2___app._root_d }}/bin"
 User={{ steam__ctx._user }}
 Group={{ steam__ctx._group }}
 

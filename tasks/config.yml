@@ -8,37 +8,37 @@
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Linux
 # * http://developer.valvesoftware.com/wiki/Command_line_options
 
-- name: '{{ "Config | filesystem | set " ~ left_4_dead_2__cfg._motd_file }}'
+- name: '{{ "Config | filesystem | set " ~ left_4_dead_2___app._motd }}'
   ansible.builtin.copy:
-    dest: '{{ left_4_dead_2__cfg._motd_file }}'
+    dest: '{{ left_4_dead_2___app._motd }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0644'
     content: '{{ left_4_dead_2__cfg._motd }}'
 
-- name: '{{ "Config | filesystem | set " ~ left_4_dead_2__cfg._host_file }}'
+- name: '{{ "Config | filesystem | set " ~ left_4_dead_2___app._host }}'
   ansible.builtin.copy:
-    dest: '{{ left_4_dead_2__cfg._host_file }}'
+    dest: '{{ left_4_dead_2___app._host }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0644'
     content: '{{ left_4_dead_2__cfg._host }}'
 
-- name: '{{ "Config | filesystem | set " ~ left_4_dead_2__cfg._server_file }}'
+- name: '{{ "Config | filesystem | set " ~ left_4_dead_2___app._server }}'
   ansible.builtin.template:
     src: 'server.cfg.j2'
-    dest: '{{ left_4_dead_2__cfg._server_file }}'
+    dest: '{{ left_4_dead_2___app._server }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0644'
   vars:
     server: '{{ left_4_dead_2__cfg._server }}'
 
-- name: '{{ "Config | filesystem | set " ~ left_4_dead_2__cfg._admins_file }}'
+- name: '{{ "Config | filesystem | set " ~ left_4_dead_2__cfg._admin_ini }}'
   when: left_4_dead_2_flg_sourcemod
   ansible.builtin.template:
     src: 'admins_simple.ini.j2'
-    dest: '{{ left_4_dead_2__cfg._admins_file }}'
+    dest: '{{ left_4_dead_2__cfg._admin_ini }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0600'

@@ -25,17 +25,17 @@ left_4_dead_2___release: "{{ {} | r_pufky.data.v3(
 
 left_4_dead_2___app: "{{ {} | r_pufky.data.v3(
 
-    _app='/home/steam/left_4_dead_2/srcds_run',
-    _root_dir='/home/steam/left_4_dead_2',
-    _app_dir='/home/steam/left_4_dead_2/left4dead2',
-    _cfg_dir='/home/steam/left_4_dead_2/left4dead2/cfg',
-    _motd_file='/home/steam/left_4_dead_2/left4dead2/motd.txt',
-    _host_file='/home/steam/left_4_dead_2/left4dead2/host.txt',
-    _server_file='/home/steam/left_4_dead_2/left4dead2/cfg/server.cfg',
-    _admins_file=(
+    _bin='/home/steam/left_4_dead_2/srcds_run',
+    _root_d='/home/steam/left_4_dead_2',
+    _app_d='/home/steam/left_4_dead_2/left4dead2',
+    _cfg_d='/home/steam/left_4_dead_2/left4dead2/cfg',
+    _motd='/home/steam/left_4_dead_2/left4dead2/motd.txt',
+    _host='/home/steam/left_4_dead_2/left4dead2/host.txt',
+    _server='/home/steam/left_4_dead_2/left4dead2/cfg/server.cfg',
+    _admin_ini=(
       '/home/steam/left_4_dead_2/addons/sourcemod/configs/admins_simple.ini'
     ),
-    _env_file='/home/steam/.steam/.env',
+    _env='/home/steam/.steam/.env',
     _steamcmd=(
       '/usr/games/steamcmd ' ~
       '+@sSteamCmdForcePlatformType ' ~ left_4_dead_2___release._platform ~

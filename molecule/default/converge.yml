@@ -9,7 +9,7 @@
         left_4_dead_2_srv_steam_user: ''
         left_4_dead_2_srv_steam_pass: !unsafe ''
 
-    - name: 'Converge | assert | ⚠ ACTION REQUIRED ⚠'
+    - name: 'Converge | assert | 🛆 ACTION REQUIRED 🛆'
       ansible.builtin.assert:
         quiet: true
         that:

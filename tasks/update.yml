@@ -39,11 +39,11 @@
     group: '{{ steam__ctx._group }}'
     mode: '0400'
 
-- name: 'Update | steamcmd | ⚠ ACTION REQUIRED ⚠'
+- name: 'Update | steamcmd | 🛆 ACTION REQUIRED 🛆'
   ansible.builtin.debug:
     msg: |
 
-      ⚠ ACTION REQUIRED ⚠
+      🛆 ACTION REQUIRED 🛆
 
       Approve Steam Guard Login Request.
 

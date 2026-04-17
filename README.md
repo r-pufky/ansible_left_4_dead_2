@@ -10,6 +10,10 @@ Requires [r_pufky.game][g] galaxy-ng collection.
   RAM      | 2GB     | 4GB
   Disk     | 7.5GB   | 10GB (without additional mods)
 
+> VM's are highly recommended to provide strong isolation. Many servers require
+> low-level access to networking and hardware. Containers may be enabled but
+> are not supported for issues.
+
 ## Role Variables
 Detailed variable use documented in defaults. See usage for role operation.
 
@@ -34,10 +38,12 @@ Tasks are gated by feature flags and executed in the following order.
 
   Step | Flag                        | Notes
  ------|-----------------------------|-------
-  1    | left_4_dead_2_flg_update    | Update server on launch or if already installed.
-  2    | left_4_dead_2_flg_config    | Set configuration files.
-  3    | left_4_dead_2_flg_metamod   | Install Metamod.
-  3    | left_4_dead_2_flg_sourcemod | Install Sourcemod.
+  1    | left_4_dead_2_flg_container | Deploy container specific settings.
+  2    | left_4_dead_2_flg_cdn       | Statically set Steam CDN IP.
+  3    | left_4_dead_2_flg_update    | Update server on launch or if already installed.
+  4    | left_4_dead_2_flg_config    | Set configuration files.
+  5    | left_4_dead_2_flg_metamod   | Install Metamod.
+  6    | left_4_dead_2_flg_sourcemod | Install Sourcemod.
 
 ### Example Playbooks
 

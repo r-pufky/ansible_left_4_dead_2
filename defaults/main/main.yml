@@ -4,7 +4,35 @@
 # Feature Flags
 ###############################################################################
 
-# 1. Force Left 4 Dead 2 server updates if already installed?
+# 1. Is this role applied to a container?
+#
+# Decision: manual user setting - There is currently no good way to
+#     deterministically and consistently detect if a remote host is a
+#     container outside of common cases.
+#
+# Special Case:
+#   * deb_flg_container=true forces left_4_dead_2_flg_container=true.
+#
+# Default: False.
+left_4_dead_2_flg_container: false
+
+# 2. Force Static IP for client-download.steampowered.com?
+#
+# client-download.steampowered.com is used for internet connectivity checks and
+# to download data. CDN DNS updates may break this for up to 72 hours. steamcmd
+# will fail with 'Please confirm your network connection and try again.'.
+#
+# Enabling resolves media.steampowered.com and statically sets /etc/hosts which
+# fix this specific issue. Requires left_4_dead_2_flg_container=false.
+#
+# This should ONLY be used as a one-off and not set by default as changing IP's
+# will result in steamcmd breaking again in the future.
+#
+# Reference:
+# * https://r-pufky.github.io/docs/game/steam/troubleshooting
+left_4_dead_2_flg_cdn: false
+
+# 3. Force Left 4 Dead 2 server updates if already installed?
 #
 # Server will be updated during role application and as a pre-start task for
 # service start. Disable to prevent updates after initial installation.
@@ -12,17 +40,17 @@
 # Default: False.
 left_4_dead_2_flg_update: false
 
-# 2. Set configuration files? Default: True.
+# 4. Set configuration files? Default: True.
 left_4_dead_2_flg_config: true
 
-# 3. Enable Metamod installation?
+# 5. Enable Metamod installation?
 #
 # Install size: ~5MB
 #
 # Default: True.
 left_4_dead_2_flg_metamod: true
 
-# 4. Enable Sourcemod installation?
+# 6. Enable Sourcemod installation?
 #
 # Install size: ~200MB
 #
@@ -41,6 +69,32 @@ left_4_dead_2_flg_sourcemod: true
 #
 # Reference:
 # * https://github.com/ValveSoftware/steam-for-linux/issues/11522
+
+# Github access token (sourcemod, metamod).
+#
+# Unauthenticated (anonymous) API requests are heavily restricted to the sum
+# total of requests to github from a given IP. Use an access token if
+# receiving 403's.
+#
+# Classic Tokens:
+# * settings > developer settings > personal access tokens (classic)
+#   * notes: {LABEL APPROPRIATELY}
+#   * expiration: {CUSTOM}
+#   * scopes: NONE
+#
+# Fine-grained Tokens:
+# * settings > developer settings > personal access tokens (fine-grained)
+#   * token name: {LABEL APPROPRIATELY}
+#   * expiration: {CUSTOM}
+#   * description: {DESCRIPTIVE TEXT}
+#   * resource owner: {YOUR ACCOUNT}
+#   * repository access: Public Repositories (read-only)
+#
+# Default: '' (unauthenticated).
+#
+# Reference:
+# * https://docs.github.com/en/authentication
+left_4_dead_2_srv_token: ''
 
 # Steam username. Default: ''.
 left_4_dead_2_srv_steam_user: ''
@@ -88,14 +142,14 @@ left_4_dead_2_srv_launch_opts:
 # * https://www.sourcemm.net/downloads.php/?branch=stable
 # * https://www.sourcemod.net/downloads.php?branch=stable
 
-# Mod branch. Default: '1.12'.
-left_4_dead_2_srv_mod_branch: '1.12'
+# Mod branch. Default: '1.12.0'.
+left_4_dead_2_srv_mod_branch: '1.12.0'
 
-# Metamod build. Default: '1219'.
-left_4_dead_2_srv_mm_build: '1219'
+# Metamod build. Default: '1221'.
+left_4_dead_2_srv_mm_build: '1221'
 
-# Sourcemod build. Default: '7223'.
-left_4_dead_2_srv_sm_build: '7223'
+# Sourcemod build. Default: '7228'.
+left_4_dead_2_srv_sm_build: '7228'
 
 ###############################################################################
 # Config

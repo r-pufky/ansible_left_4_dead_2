@@ -8,8 +8,11 @@
     name: 'r_pufky.game.steam'
   vars:
     steam_flg_update: false
+    steam_flg_container: '{{ left_4_dead_2_flg_container }}'
+    steam_flg_cdn: '{{ left_4_dead_2_flg_cdn }}'
     steam_flg_metamod: '{{ left_4_dead_2_flg_metamod }}'
     steam_flg_sourcemod: '{{ left_4_dead_2_flg_sourcemod }}'
+    steam_srv_token: '{{ left_4_dead_2__srv._token }}'
     steam_cfg_mod_branch: '{{ left_4_dead_2__srv._mod_branch }}'
     steam_cfg_mm_build: '{{ left_4_dead_2__srv._mm_build }}'
     steam_cfg_sm_build: '{{ left_4_dead_2__srv._sm_build }}'

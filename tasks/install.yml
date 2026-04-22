@@ -42,6 +42,14 @@
     mode: '0755'
     state: 'directory'
 
+- name: '{{ "Install | filesystem | " ~ left_4_dead_2___app._update_server }}'
+  ansible.builtin.template:
+    src: 'update_server.j2'
+    dest: '{{ left_4_dead_2___app._update_server }}'
+    owner: '{{ steam__ctx._user }}'
+    group: '{{ steam__ctx._group }}'
+    mode: '0755'
+
 - name: 'Install | systemd | set left_4_dead_2.service'
   ansible.builtin.template:
     src: 'systemd/left_4_dead_2.service.j2'

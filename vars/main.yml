@@ -35,6 +35,7 @@ left_4_dead_2___app: "{{ {} | r_pufky.data.v3(
     _admin_ini=(
       '/home/steam/left_4_dead_2/addons/sourcemod/configs/admins_simple.ini'
     ),
+    _update_server='/home/steam/left_4_dead_2/update_server',
     _env='/home/steam/.steam/.env',
     _steamcmd=(
       '/usr/games/steamcmd ' ~
